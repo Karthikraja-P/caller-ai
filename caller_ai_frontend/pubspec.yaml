@@ -1,0 +1,90 @@
+name: caller_ai
+description: AI-Powered Call Management & Voice Assistant Platform
+publish_to: none
+version: 2.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
+
+  # Networking
+  dio: ^5.7.0
+  web_socket_channel: ^3.0.1
+
+  # Supabase
+  supabase_flutter: ^2.6.0
+
+  # Local Storage
+  hive_flutter: ^1.1.0
+  flutter_secure_storage: ^9.2.2
+  isar: ^3.1.0
+  isar_flutter_libs: ^3.1.0
+
+  # Auth / OTP
+  libphonenumber_plugin: ^0.4.0
+  pin_code_fields: ^8.0.1
+
+  # Permissions
+  permission_handler: ^11.3.1
+
+  # Image
+  image_picker: ^1.1.2
+  cached_network_image: ^3.4.1
+
+  # Audio
+  just_audio: ^0.9.40
+
+  # Push Notifications
+  firebase_core: ^3.6.0
+  firebase_messaging: ^15.1.3
+
+  # Ads
+  google_mobile_ads: ^5.1.0
+
+  # Subscriptions
+  purchases_flutter: ^6.29.0  # RevenueCat
+
+  # Navigation
+  go_router: ^14.3.0
+
+  # UI Utilities
+  flutter_svg: ^2.0.10
+  lottie: ^3.1.2
+  shimmer: ^3.0.0
+  fluttertoast: ^8.2.8
+  country_code_picker: ^3.0.0
+  intl: ^0.19.0
+  url_launcher: ^6.3.1
+  share_plus: ^10.0.2
+
+  # Analytics
+  mixpanel_flutter: ^2.3.3
+
+  # Functional
+  dartz: ^0.10.1
+  get_it: ^8.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  hive_generator: ^2.0.1
+  isar_generator: ^3.1.0
+  build_runner: ^2.4.12
+  bloc_test: ^9.1.7
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/animations/
