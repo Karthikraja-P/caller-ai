@@ -155,9 +155,40 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                         : "We'll send you a 6-digit code to verify your phone number",
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
                   ),
-                  const SizedBox(height: 32),
+                  // Google Sign-In (Preferred, Zero-Cost)
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        // Firebase/Supabase Google OAuth trigger
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Google Sign-In coming soon!')),
+                        );
+                      },
+                      icon: const Icon(Icons.g_mobiledata_rounded, size: 32, color: Colors.white),
+                      label: const Text('Continue with Google', style: TextStyle(color: Colors.white)),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColors.bgSurface, width: 2),
+                        backgroundColor: AppColors.bgCard,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
 
-                  // Phone input row
+                  Row(
+                    children: [
+                      const Expanded(child: Divider(color: AppColors.bgSurface)),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text('OR', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                      ),
+                      const Expanded(child: Divider(color: AppColors.bgSurface)),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Phone input row (Fallback)
                   Row(
                     children: [
                       Container(

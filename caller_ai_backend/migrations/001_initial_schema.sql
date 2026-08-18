@@ -16,10 +16,10 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   display_name TEXT,
   email TEXT,
   avatar_url TEXT,
-  plan TEXT DEFAULT 'free' CHECK (plan IN ('free', 'premium')),
+  plan TEXT DEFAULT 'free' CHECK (plan IN ('free', 'micro', 'premium')),
   onboarding_complete BOOLEAN DEFAULT false,
-  ai_calls_used INT DEFAULT 0,
-  ai_calls_limit INT DEFAULT 10,
+  ai_calls_this_month INT DEFAULT 0,
+  ai_calls_limit INT DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -266,3 +266,14 @@ CREATE TRIGGER ai_agent_configs_updated_at BEFORE UPDATE ON public.ai_agent_conf
 -- ============================================================
 ALTER PUBLICATION supabase_realtime ADD TABLE public.call_logs;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.ai_call_transcripts;
+
+-- ============================================================
+-- 14. Monthly Quota Reset Cron Job (pg_cron)
+-- ============================================================
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
+SELECT cron.schedule(
+  'reset_ai_calls_monthly',
+  '0 0 1 * *', -- Run at midnight on the 1st of every month
+  $$ UPDATE public.profiles SET ai_calls_this_month = 0; $$
+);

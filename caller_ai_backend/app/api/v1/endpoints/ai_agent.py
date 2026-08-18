@@ -100,13 +100,39 @@ async def handle_ai_call(request: Request):
     if not validate_twilio_signature(url, dict(form), signature):
         raise HTTPException(status_code=403, detail="Invalid Twilio signature")
 
-    # Find user by their Twilio number
+    # Find user by their Twilio number (in real app, map To number to user)
+    # For now, let's just query the first active agent config
     admin = get_admin_db()
-    config_resp = admin.table("ai_agent_configs").select("*").eq(
+    config_resp = admin.table("ai_agent_configs").select("user_id, agent_name").eq(
         "spam_handling_enabled", True
     ).limit(1).execute()
-    config = config_resp.data[0] if config_resp.data else {}
+    
+    if not config_resp.data:
+        from fastapi.responses import Response
+        return Response(content="<Response><Reject/></Response>", media_type="application/xml")
+
+    config = config_resp.data[0]
+    user_id = config["user_id"]
     agent_name = config.get("agent_name", "Assistant")
+
+    # Quota check
+    profile_resp = admin.table("profiles").select("ai_calls_this_month, ai_calls_limit, plan").eq("id", user_id).single().execute()
+    if profile_resp.data:
+        p = profile_resp.data
+        if p["plan"] != "premium" and p["ai_calls_this_month"] >= p["ai_calls_limit"]:
+            # Quota exceeded: reject call without routing to AI to save costs
+            reject_twiml = (
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                "<Response>\n"
+                "  <Say>The person you are calling is currently unavailable.</Say>\n"
+                "  <Hangup/>\n"
+                "</Response>"
+            )
+            from fastapi.responses import Response
+            return Response(content=reject_twiml, media_type="application/xml")
+            
+        # Increment usage
+        admin.table("profiles").update({"ai_calls_this_month": p["ai_calls_this_month"] + 1}).eq("id", user_id).execute()
 
     ws_url = f"wss://{request.headers.get('host', 'api.callerai.app')}/api/v1/ai/call/stream/{call_sid}"
     twiml = build_ai_call_twiml(ws_url, agent_name)
