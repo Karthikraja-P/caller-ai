@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS public.ai_call_transcripts (
 CREATE INDEX IF NOT EXISTS idx_transcripts_user_created ON public.ai_call_transcripts(user_id, created_at DESC);
 ALTER TABLE public.ai_call_transcripts ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own transcripts" ON public.ai_call_transcripts FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Service can insert transcripts" ON public.ai_call_transcripts FOR INSERT WITH CHECK (true);
+-- The service-role client bypasses RLS; no client INSERT policy is granted.
 
 -- ============================================================
 -- 6. SPAM REPORTS

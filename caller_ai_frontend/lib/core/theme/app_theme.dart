@@ -117,7 +117,7 @@ class AppTheme {
         labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
         hintStyle: GoogleFonts.inter(color: AppColors.textMuted),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.bgCard,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

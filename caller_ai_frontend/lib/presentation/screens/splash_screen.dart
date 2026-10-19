@@ -146,7 +146,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                 // Tagline
                 Text(
-                  'Your AI Call Assistant',
+                  'Smart Voicemail & Spam Protection',
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 14,

@@ -1,3 +1,4 @@
+import asyncio
 import json
 import time
 import httpx
@@ -115,7 +116,6 @@ async def waterfall_lookup(phone: str) -> dict:
     Tier 3: Telnyx + TrestleIQ CNAM (parallel, ~500ms)
     Tier 4: Apify OSINT (~800ms, last resort)
     """
-    import asyncio
     start = time.monotonic()
 
     # Tier 1: Cache

@@ -16,12 +16,9 @@ class _PremiumScreenState extends State<PremiumScreen> {
   ];
 
   final _features = [
-    {'feature': 'AI Calls/Month', 'free': '10', 'premium': 'Unlimited'},
+    {'feature': 'Voicemail Storage', 'free': '50', 'premium': 'Unlimited'},
     {'feature': 'Ads', 'free': 'Yes', 'premium': 'None'},
-    {'feature': 'Busy Mode', 'free': '✗', 'premium': '✓'},
-    {'feature': 'WhatsApp Diversion', 'free': '✗', 'premium': '✓'},
-    {'feature': 'Spam Protection', 'free': 'Basic', 'premium': 'AI-Powered'},
-    {'feature': 'Voice Search', 'free': '✗', 'premium': '✓'},
+    {'feature': 'Spam Protection', 'free': 'Basic', 'premium': 'Advanced'},
     {'feature': 'Priority Support', 'free': '✗', 'premium': '✓'},
   ];
 

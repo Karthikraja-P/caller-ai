@@ -4,25 +4,20 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.telephony.TelephonyManager
-import io.flutter.plugin.common.EventChannel
 
 class CallReceiver : BroadcastReceiver() {
-    companion object {
-        var eventSink: EventChannel.EventSink? = null
-        private var lastState: String = TelephonyManager.EXTRA_STATE_IDLE
-    }
-
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != "android.intent.action.PHONE_STATE") return
 
         val state = intent.getStringExtra(TelephonyManager.EXTRA_STATE) ?: return
+        val lastState = CallEventQueue.lastState(context, TelephonyManager.EXTRA_STATE_IDLE)
         val incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER) ?: "Unknown"
 
         when (state) {
             TelephonyManager.EXTRA_STATE_RINGING -> {
                 if (lastState != TelephonyManager.EXTRA_STATE_RINGING) {
                     // New incoming call
-                    eventSink?.success(mapOf(
+                    CallEventQueue.publish(context, mapOf(
                         "event" to "incoming",
                         "number" to incomingNumber,
                         "timestamp" to System.currentTimeMillis(),
@@ -32,7 +27,7 @@ class CallReceiver : BroadcastReceiver() {
             TelephonyManager.EXTRA_STATE_OFFHOOK -> {
                 if (lastState == TelephonyManager.EXTRA_STATE_RINGING) {
                     // Call answered
-                    eventSink?.success(mapOf(
+                    CallEventQueue.publish(context, mapOf(
                         "event" to "answered",
                         "number" to incomingNumber,
                     ))
@@ -41,19 +36,19 @@ class CallReceiver : BroadcastReceiver() {
             TelephonyManager.EXTRA_STATE_IDLE -> {
                 if (lastState == TelephonyManager.EXTRA_STATE_RINGING) {
                     // Call missed/rejected
-                    eventSink?.success(mapOf(
+                    CallEventQueue.publish(context, mapOf(
                         "event" to "missed",
                         "number" to incomingNumber,
                     ))
                 } else if (lastState == TelephonyManager.EXTRA_STATE_OFFHOOK) {
                     // Call ended
-                    eventSink?.success(mapOf(
+                    CallEventQueue.publish(context, mapOf(
                         "event" to "ended",
                         "number" to incomingNumber,
                     ))
                 }
             }
         }
-        lastState = state
+        CallEventQueue.setLastState(context, state)
     }
 }

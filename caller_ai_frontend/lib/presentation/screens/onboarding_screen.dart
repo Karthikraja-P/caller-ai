@@ -15,20 +15,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<Map<String, dynamic>> _pages = [
     {
       'title': 'Know Who Calls',
-      'desc': 'Identify every caller instantly with AI-powered caller ID and spam protection. Never be caught off guard again.',
+      'desc': 'Identify every caller instantly with smart caller lookup and spam protection. Never be caught off guard again.',
       'icon': Icons.person_search_rounded,
       'gradient': [Color(0xFF1F6C92), Color(0xFF0D4A6B)],
     },
     {
-      'title': 'AI Answers Your Calls',
-      'desc': 'Your AI assistant attends spam calls, extracts loan amounts, trading tips, and deals — then reports back to you.',
-      'icon': Icons.smart_toy_rounded,
+      'title': 'Private Voicemail Inbox',
+      'desc': 'Callers can leave a secure recorded voicemail when you are busy or unavailable. Private, encrypted, and on your terms.',
+      'icon': Icons.voicemail_rounded,
       'gradient': [Color(0xFF6366F1), Color(0xFF4338CA)],
     },
     {
-      'title': 'Never Miss Important Calls',
-      'desc': "Busy? Your AI handles calls and diverts contacts to WhatsApp automatically. Stay connected, your way.",
-      'icon': Icons.forum_rounded,
+      'title': 'Spam Protection',
+      'desc': 'Screen incoming numbers and identify potential spam before picking up. Stay in control of your phone.',
+      'icon': Icons.shield_rounded,
       'gradient': [Color(0xFF059669), Color(0xFF047857)],
     },
     {

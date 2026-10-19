@@ -8,12 +8,16 @@ class CallOverlayScreen extends StatelessWidget {
   final int spamScore;
   final bool aiHandling;
 
+  /// Display-only mode for native call events: no backend calls or AI handoff.
+  final bool previewOnly;
+
   const CallOverlayScreen({
     super.key,
     required this.callerNumber,
     required this.callerName,
     this.spamScore = 0,
     this.aiHandling = false,
+    this.previewOnly = false,
   });
 
   @override
@@ -71,24 +75,24 @@ class CallOverlayScreen extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            // AI status
+            // Voicemail hint
             if (aiHandling)
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 32),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.aiBlue.withOpacity(0.15),
+                  color: AppColors.primary.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.aiBlue.withOpacity(0.3)),
+                  border: Border.all(color: AppColors.primary.withOpacity(0.3)),
                 ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.smart_toy_rounded, color: AppColors.aiBlue),
+                    Icon(Icons.voicemail_rounded, color: AppColors.primary),
                     SizedBox(width: 10),
                     Text(
-                      'Max is handling this call',
-                      style: TextStyle(color: AppColors.aiBlue, fontWeight: FontWeight.w600),
+                      'Caller will be sent to Voicemail',
+                      style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -106,9 +110,10 @@ class CallOverlayScreen extends StatelessWidget {
                     icon: Icons.call, color: AppColors.success, label: 'Answer',
                     onTap: () => Navigator.pop(context),
                   ),
+                  if (!previewOnly) ...[
                   _actionButton(
-                    icon: Icons.smart_toy_rounded, color: AppColors.aiBlue, label: 'AI Handle',
-                    onTap: () => Navigator.pushReplacementNamed(context, '/ai-voice-call'),
+                    icon: Icons.voicemail_rounded, color: AppColors.primary, label: 'Voicemail',
+                    onTap: () => Navigator.pop(context),
                   ),
                   _actionButton(
                     icon: Icons.chat_rounded, color: AppColors.whatsapp, label: 'WhatsApp',
@@ -127,6 +132,7 @@ class CallOverlayScreen extends StatelessWidget {
                       Navigator.pop(context);
                     },
                   ),
+                  ],
                   _actionButton(
                     icon: Icons.arrow_downward_rounded, color: Colors.grey, label: 'Dismiss',
                     onTap: () => Navigator.pop(context),

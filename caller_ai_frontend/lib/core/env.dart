@@ -1,27 +1,42 @@
 // ============================================================
 // Caller AI - Environment Configuration
-// Non-secret keys only. Secret keys stay on backend.
+// Build-time configuration via --dart-define. No hardcoded secrets.
 // ============================================================
 
 class AppEnv {
-  // Supabase (public keys only)
-  static const String supabaseUrl = 'https://your-project.supabase.co';
-  static const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+  // Supabase (public keys only, injected via --dart-define)
+  static const String supabaseUrl = String.fromEnvironment(
+    'SUPABASE_URL',
+    defaultValue: 'https://placeholder.supabase.co',
+  );
+  static const String supabaseAnonKey = String.fromEnvironment(
+    'SUPABASE_ANON_KEY',
+    defaultValue: '',
+  );
 
   // Backend API
-  static const String apiBaseUrl = 'https://api.callerai.app/api/v1';
+  static const String apiBaseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'https://api.callerai.app/api/v1',
+  );
 
   // Google AdMob
-  static const String admobAppId = 'ca-app-pub-xxxxxxxxxxxxxxxx~xxxxxxxxxx';
-  static const String admobBannerAdUnit = 'ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx';
-
-  // Firebase (initialized from google-services.json / GoogleService-Info.plist)
-  // No manual key needed here.
+  static const String admobAppId = String.fromEnvironment(
+    'ADMOB_APP_ID',
+    defaultValue: '',
+  );
+  static const String admobBannerAdUnit = String.fromEnvironment(
+    'ADMOB_BANNER_AD_UNIT',
+    defaultValue: '',
+  );
 
   // Mixpanel
-  static const String mixpanelToken = 'your_mixpanel_project_token';
+  static const String mixpanelToken = String.fromEnvironment(
+    'MIXPANEL_TOKEN',
+    defaultValue: '',
+  );
 
   // App
-  static const String appVersion = '2.0.0';
-  static const bool isDebug = true;
+  static const String appVersion = '1.0.0';
+  static const bool isDebug = bool.fromEnvironment('DEBUG', defaultValue: false);
 }

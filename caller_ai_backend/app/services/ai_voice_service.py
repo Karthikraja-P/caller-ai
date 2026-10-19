@@ -4,23 +4,41 @@ import io
 from typing import AsyncGenerator
 
 import httpx
-from google.cloud import texttospeech
-from openai import AsyncOpenAI
 
 from app.core.config import settings
 
-openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+_openai_client = None
+
+
+def get_openai_client():
+    global _openai_client
+    if _openai_client is None:
+        if not settings.OPENAI_API_KEY:
+            raise ValueError("OPENAI_API_KEY is not configured")
+        from openai import AsyncOpenAI
+        _openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+    return _openai_client
 
 
 async def transcribe_audio(audio_bytes: bytes, language: str = "en") -> str:
     """
     Transcribe audio bytes using OpenAI Whisper API.
+    Converts raw 8-kHz mu-law bytes to a valid WAV container if needed.
     Returns transcript string.
     """
-    audio_file = io.BytesIO(audio_bytes)
+    client = get_openai_client()
+
+    # If incoming bytes are raw mu-law (no RIFF header), wrap in valid 16-bit PCM WAV
+    if not audio_bytes.startswith(b"RIFF"):
+        from app.services.audio_codecs import mulaw_to_wav
+        wav_payload = mulaw_to_wav(audio_bytes, sample_rate=8000)
+    else:
+        wav_payload = audio_bytes
+
+    audio_file = io.BytesIO(wav_payload)
     audio_file.name = "audio.wav"
 
-    transcript = await openai_client.audio.transcriptions.create(
+    transcript = await client.audio.transcriptions.create(
         model="whisper-1",
         file=audio_file,
         language=language,
@@ -34,6 +52,7 @@ async def synthesize_speech(text: str, voice_id: str = "en-US-Neural2-A") -> byt
     Convert text to speech using Google Cloud TTS.
     Returns MP3 audio bytes.
     """
+    from google.cloud import texttospeech
     client = texttospeech.TextToSpeechAsyncClient()
 
     synthesis_input = texttospeech.SynthesisInput(text=text)
@@ -57,8 +76,11 @@ async def synthesize_speech(text: str, voice_id: str = "en-US-Neural2-A") -> byt
 
 async def synthesize_speech_rest(text: str, voice_id: str = "en-US-Neural2-A") -> bytes:
     """
-    Fallback: Google TTS via REST API (uses API key instead of service account).
+    Preview / fallback: Google TTS via REST API returning MP3 audio bytes.
     """
+    if not settings.GOOGLE_TTS_API_KEY:
+        raise ValueError("GOOGLE_TTS_API_KEY is not configured")
+
     url = f"https://texttospeech.googleapis.com/v1/text:synthesize?key={settings.GOOGLE_TTS_API_KEY}"
     payload = {
         "input": {"text": text},
@@ -76,6 +98,38 @@ async def synthesize_speech_rest(text: str, voice_id: str = "en-US-Neural2-A") -
         resp.raise_for_status()
         audio_b64 = resp.json().get("audioContent", "")
         return base64.b64decode(audio_b64)
+
+
+async def synthesize_speech_mulaw(text: str, voice_id: str = "en-US-Neural2-A") -> bytes:
+    """
+    Outbound stream TTS: Request Google TTS MULAW at 8000 Hz, strip/validate
+    the RIFF WAV container, and return headerless raw 8-kHz G.711 mu-law bytes for Twilio.
+    """
+    from app.services.audio_codecs import extract_raw_mulaw_from_wav
+    if not settings.GOOGLE_TTS_API_KEY:
+        raise ValueError("GOOGLE_TTS_API_KEY is not configured")
+
+    url = f"https://texttospeech.googleapis.com/v1/text:synthesize?key={settings.GOOGLE_TTS_API_KEY}"
+    payload = {
+        "input": {"text": text},
+        "voice": {
+            "languageCode": voice_id[:5],
+            "name": voice_id,
+        },
+        "audioConfig": {
+            "audioEncoding": "MULAW",
+            "sampleRateHertz": 8000,
+            "speakingRate": 1.0,
+        },
+    }
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        resp = await client.post(url, json=payload)
+        resp.raise_for_status()
+        audio_b64 = resp.json().get("audioContent", "")
+        if not audio_b64:
+            raise ValueError("Google TTS response missing audioContent")
+        wav_bytes = base64.b64decode(audio_b64)
+        return extract_raw_mulaw_from_wav(wav_bytes)
 
 
 SPAM_INTENTS = {

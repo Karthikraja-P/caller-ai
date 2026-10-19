@@ -15,7 +15,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedTab = 0;
   Map<String, dynamic>? _profile;
-  Map<String, dynamic>? _agentConfig;
+  Map<String, dynamic>? _voicemailData;
   Map<String, dynamic>? _spamStats;
   List<dynamic> _recentCalls = [];
   bool _isLoading = true;
@@ -32,13 +32,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     try {
       final results = await Future.wait([
         apiClient.get('/users/profile').then((r) => r.data),
-        apiClient.get('/ai/agent/config').then((r) => r.data).catchError((_) => null),
+        apiClient.get('/voicemail/messages', queryParameters: {'per_page': 20}).then((r) => r.data).catchError((_) => null),
         apiClient.get('/spam/stats').then((r) => r.data),
         apiClient.get('/lookup/recent').then((r) => r.data),
       ]);
       setState(() {
         _profile = results[0] as Map<String, dynamic>?;
-        _agentConfig = results[1] as Map<String, dynamic>?;
+        _voicemailData = results[1] as Map<String, dynamic>?;
         _spamStats = results[2] as Map<String, dynamic>?;
         final recentData = results[3] as Map<String, dynamic>?;
         _recentCalls = recentData?['lookups'] ?? [];
@@ -140,8 +140,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _buildStatsRow(),
             const SizedBox(height: 16),
 
-            // AI Agent card
-            if (_agentConfig != null) _buildAIAgentCard(),
+            // Voicemail card
+            _buildVoicemailCard(),
             const SizedBox(height: 16),
 
             // Recent calls
@@ -193,6 +193,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildStatsRow() {
+    final voicemailCount = ((_voicemailData?['messages'] as List?)?.length ?? 0).toString();
     final stats = [
       {
         'value': _recentCalls.length.toString(),
@@ -201,10 +202,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'icon': Icons.search,
       },
       {
-        'value': (_agentConfig != null ? '12' : '0'),
-        'label': 'AI Handled',
+        'value': voicemailCount,
+        'label': 'Voicemails',
         'color': AppColors.success,
-        'icon': Icons.smart_toy_rounded,
+        'icon': Icons.voicemail_rounded,
       },
       {
         'value': (_spamStats?['total_blocked'] ?? 0).toString(),
@@ -248,59 +249,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildAIAgentCard() {
-    final agentName = _agentConfig!['agent_name'] ?? 'Assistant';
-    final isActive = _agentConfig!['spam_handling_enabled'] == true;
+  Widget _buildVoicemailCard() {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/ai-agent'),
+      onTap: () => Navigator.pushNamed(context, '/voicemail'),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.aiBlue.withOpacity(0.2), AppColors.aiPurple.withOpacity(0.1)],
+            colors: [AppColors.primary.withOpacity(0.2), AppColors.bgSurface],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.aiBlue.withOpacity(0.3)),
+          border: Border.all(color: AppColors.primary.withOpacity(0.3)),
         ),
         child: Row(
           children: [
             Container(
               width: 52, height: 52,
               decoration: BoxDecoration(
-                color: AppColors.aiBlue.withOpacity(0.2),
+                color: AppColors.primary.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(Icons.smart_toy_rounded, color: AppColors.aiBlue, size: 28),
+              child: const Icon(Icons.voicemail_rounded, color: AppColors.primary, size: 28),
             ),
             const SizedBox(width: 16),
-            Expanded(
+            const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(agentName, style: const TextStyle(
+                  Text('Voicemail Inbox', style: TextStyle(
                     color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold,
                   )),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Container(
-                        width: 8, height: 8,
-                        decoration: BoxDecoration(
-                          color: isActive ? AppColors.success : AppColors.textMuted,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        isActive ? 'Active - Spam Handling ON' : 'Standby',
-                        style: TextStyle(
-                          color: isActive ? AppColors.success : AppColors.textMuted,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+                  SizedBox(height: 4),
+                  Text(
+                    'Recorded caller voicemails',
+                    style: TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
@@ -411,12 +398,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     const tabs = [
       {'icon': Icons.home_rounded, 'label': 'Home'},
       {'icon': Icons.history_rounded, 'label': 'Call Log'},
-      {'icon': Icons.smart_toy_rounded, 'label': 'AI Agent'},
+      {'icon': Icons.voicemail_rounded, 'label': 'Voicemail'},
       {'icon': Icons.shield_rounded, 'label': 'Spam'},
       {'icon': Icons.settings_rounded, 'label': 'Settings'},
     ];
 
-    const routes = [null, '/call-log', '/ai-agent', '/spam-center', '/settings'];
+    const routes = [null, '/call-log', '/voicemail', '/spam-center', '/settings'];
 
     return Container(
       decoration: BoxDecoration(

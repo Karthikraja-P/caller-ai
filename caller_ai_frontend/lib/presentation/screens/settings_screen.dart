@@ -14,14 +14,12 @@ class SettingsScreen extends StatelessWidget {
         'title': 'Account',
         'items': [
           {'icon': Icons.person_rounded, 'label': 'Profile & Account', 'route': '/profile', 'color': AppColors.primary},
-          {'icon': Icons.workspace_premium_rounded, 'label': 'Premium Subscription', 'route': '/premium', 'color': AppColors.gold},
         ],
       },
       {
-        'title': 'AI Features',
+        'title': 'Voicemail',
         'items': [
-          {'icon': Icons.smart_toy_rounded, 'label': 'AI Agent Config', 'route': '/ai-agent', 'color': AppColors.aiBlue},
-          {'icon': Icons.history_rounded, 'label': 'AI Call History', 'route': '/ai-call-history', 'color': AppColors.aiPurple},
+          {'icon': Icons.voicemail_rounded, 'label': 'Voicemail Inbox', 'route': '/voicemail', 'color': AppColors.primary},
         ],
       },
       {
@@ -29,12 +27,6 @@ class SettingsScreen extends StatelessWidget {
         'items': [
           {'icon': Icons.shield_rounded, 'label': 'Spam Center', 'route': '/spam-center', 'color': AppColors.spamHigh},
           {'icon': Icons.block_rounded, 'label': 'Blocked Numbers', 'route': null, 'color': AppColors.error},
-        ],
-      },
-      {
-        'title': 'Integrations',
-        'items': [
-          {'icon': Icons.chat_rounded, 'label': 'WhatsApp Bridge', 'route': '/whatsapp', 'color': AppColors.whatsapp},
         ],
       },
       {

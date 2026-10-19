@@ -162,7 +162,7 @@ class _CallLogScreenState extends State<CallLogScreen> {
               color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold,
             )),
             const SizedBox(height: 16),
-            ...['All', 'Missed', 'AI Handled', 'Spam', 'Blocked'].map((f) =>
+            ...['All', 'Missed', 'Voicemail', 'Spam', 'Blocked'].map((f) =>
               ListTile(
                 title: Text(f, style: const TextStyle(color: Colors.white)),
                 trailing: _filter.toLowerCase() == f.toLowerCase()

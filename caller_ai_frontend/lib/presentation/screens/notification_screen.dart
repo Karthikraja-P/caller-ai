@@ -7,9 +7,9 @@ class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final notifications = [
-      {'type': 'spam', 'title': 'Spam call blocked', 'body': 'AI Agent blocked a call from +91 98765 43210', 'time': '2m ago'},
-      {'type': 'ai', 'title': 'AI call transcript ready', 'body': 'Max handled a loan offer call. Tap to view details.', 'time': '15m ago'},
-      {'type': 'busy', 'title': 'AI took a message', 'body': 'Your friend called. Max took a message for you.', 'time': '1h ago'},
+      {'type': 'voicemail', 'title': 'New voicemail received', 'body': 'New recorded voicemail from +91 98765 43210', 'time': '2m ago'},
+      {'type': 'spam', 'title': 'Spam detected', 'body': 'Potential telemarketer call identified in recent lookups', 'time': '15m ago'},
+      {'type': 'voicemail', 'title': 'Voicemail saved', 'body': 'Voicemail recording ready to play in your inbox', 'time': '1h ago'},
     ];
 
     return Scaffold(
@@ -23,14 +23,10 @@ class NotificationScreen extends StatelessWidget {
           final n = notifications[i];
           final icon = n['type'] == 'spam'
               ? Icons.shield_rounded
-              : n['type'] == 'ai'
-                  ? Icons.smart_toy_rounded
-                  : Icons.message_rounded;
+              : Icons.voicemail_rounded;
           final color = n['type'] == 'spam'
               ? AppColors.spamHigh
-              : n['type'] == 'ai'
-                  ? AppColors.aiBlue
-                  : AppColors.success;
+              : AppColors.primary;
           return Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(

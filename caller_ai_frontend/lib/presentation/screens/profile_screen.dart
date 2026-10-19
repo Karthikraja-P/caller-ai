@@ -9,20 +9,15 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic>? _profile;
-  Map<String, dynamic>? _subscription;
   bool _loading = true;
 
   @override void initState() { super.initState(); _load(); }
 
   Future<void> _load() async {
     try {
-      final results = await Future.wait([
-        apiClient.get('/users/profile').then((r) => r.data),
-        apiClient.get('/users/subscription').then((r) => r.data),
-      ]);
+      final res = await apiClient.get('/users/profile');
       setState(() {
-        _profile = results[0];
-        _subscription = results[1];
+        _profile = res.data;
         _loading = false;
       });
     } catch (_) { setState(() => _loading = false); }
@@ -36,12 +31,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     final p = _profile ?? {};
-    final sub = _subscription ?? {};
-    final plan = sub['plan'] ?? 'free';
-    final features = sub['features'] as Map<String, dynamic>? ?? {};
-    final aiUsed = features['ai_calls_used'] ?? 0;
-    final aiLimit = features['ai_agent_limit'] ?? 10;
-    final isPremium = plan == 'premium';
 
     return Scaffold(
       backgroundColor: AppColors.bgDark,
@@ -80,61 +69,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Subscription card
+            // Account Status card
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: isPremium
-                      ? [AppColors.gold.withOpacity(0.2), AppColors.goldDark.withOpacity(0.1)]
-                      : [AppColors.bgCard, AppColors.bgCard],
-                ),
+                color: AppColors.bgCard,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isPremium ? AppColors.gold.withOpacity(0.4) : AppColors.bgSurface,
-                ),
+                border: Border.all(color: AppColors.bgSurface),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Row(
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.verified_user_rounded, color: AppColors.primary, size: 22),
+                  ),
+                  const SizedBox(width: 14),
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(isPremium ? Icons.workspace_premium_rounded : Icons.person_rounded,
-                        color: isPremium ? AppColors.gold : AppColors.textSecondary,
-                      ),
-                      const SizedBox(width: 8),
                       Text(
-                        isPremium ? 'Premium Plan' : 'Free Plan',
-                        style: TextStyle(
-                          color: isPremium ? AppColors.gold : AppColors.textSecondary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                        'Account Status',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Voicemail Protection Active',
+                        style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
                       ),
                     ],
                   ),
-                  if (!isPremium) ...[
-                    const SizedBox(height: 12),
-                    Text('AI Calls: $aiUsed / $aiLimit used', style: TextStyle(color: AppColors.textSecondary)),
-                    const SizedBox(height: 6),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: aiLimit > 0 ? aiUsed / aiLimit : 0,
-                        backgroundColor: AppColors.bgSurface,
-                        color: aiUsed >= aiLimit ? AppColors.error : AppColors.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.pushNamed(context, '/premium'),
-                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.gold),
-                        child: const Text('Upgrade to Premium', style: TextStyle(color: Colors.black)),
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),
@@ -145,13 +113,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: BoxDecoration(color: AppColors.bgCard, borderRadius: BorderRadius.circular(16)),
               child: Column(
                 children: [
-                  ListTile(
-                    leading: const Icon(Icons.contacts_rounded, color: AppColors.primary),
-                    title: const Text('Collected Contacts', style: TextStyle(color: Colors.white)),
-                    subtitle: Text('Manage contact data', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
-                    trailing: const Icon(Icons.arrow_forward_ios, color: AppColors.textMuted, size: 14),
-                  ),
-                  const Divider(color: AppColors.bgSurface, height: 1, indent: 60),
                   ListTile(
                     leading: const Icon(Icons.download_rounded, color: AppColors.primary),
                     title: const Text('Download My Data', style: TextStyle(color: Colors.white)),

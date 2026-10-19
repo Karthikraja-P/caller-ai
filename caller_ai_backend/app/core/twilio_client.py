@@ -37,13 +37,39 @@ def check_otp_via_twilio(phone_number: str, otp_code: str) -> bool:
     return result.status == "approved"
 
 
-def build_ai_call_twiml(websocket_url: str, agent_name: str) -> str:
+def build_ai_call_twiml(websocket_url: str, agent_name: str, route_token: str) -> str:
     """Generate TwiML to connect incoming call to AI WebSocket stream."""
     response = VoiceResponse()
     response.say(f"Please hold. {agent_name} will be with you shortly.")
     connect = Connect()
     stream = Stream(url=websocket_url)
     stream.parameter(name="agent_name", value=agent_name)
+    stream.parameter(name="route_token", value=route_token)
     connect.append(stream)
     response.append(connect)
+    return str(response)
+
+
+def build_voicemail_twiml(
+    greeting_text: str,
+    action_url: str,
+    status_callback_url: str,
+    max_length: int = 120,
+) -> str:
+    """
+    Generate TwiML to record caller voicemail.
+    Greets caller, executes <Record> with bounded max_length, explicit action,
+    and recordingStatusCallback, followed by <Hangup/> to prevent loops.
+    """
+    response = VoiceResponse()
+    response.say(greeting_text)
+    response.record(
+        action=action_url,
+        recording_status_callback=status_callback_url,
+        max_length=max_length,
+        play_beep=True,
+        trim="trim-silence",
+        finish_on_key="#",
+    )
+    response.hangup()
     return str(response)

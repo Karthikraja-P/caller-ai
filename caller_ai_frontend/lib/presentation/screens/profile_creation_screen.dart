@@ -37,7 +37,7 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
         if (_emailController.text.isNotEmpty) 'email': _emailController.text.trim(),
         if (_avatarUrl != null) 'avatar_url': _avatarUrl,
       });
-      if (mounted) Navigator.pushReplacementNamed(context, '/ai-agent-setup');
+      if (mounted) Navigator.pushReplacementNamed(context, '/permissions');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to save profile: $e'), backgroundColor: AppColors.error),
@@ -60,7 +60,7 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: TextButton(
-                  onPressed: () => Navigator.pushReplacementNamed(context, '/ai-agent-setup'),
+                  onPressed: () => Navigator.pushReplacementNamed(context, '/permissions'),
                   child: Text('Skip for now', style: TextStyle(color: AppColors.textSecondary)),
                 ),
               ),

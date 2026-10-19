@@ -217,10 +217,6 @@ class _NumberSearchScreenState extends State<NumberSearchScreen> {
                   'category': 'Other',
                 });
               }),
-              const SizedBox(width: 8),
-              _actionBtn(Icons.smart_toy_rounded, 'AI Handle', AppColors.aiBlue, () {}),
-              const SizedBox(width: 8),
-              _actionBtn(Icons.chat, 'WhatsApp', AppColors.whatsapp, () {}),
             ],
           ),
         ],

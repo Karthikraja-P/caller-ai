@@ -11,52 +11,54 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: str = "http://localhost:3000"
 
     # Supabase
-    SUPABASE_URL: str
-    SUPABASE_ANON_KEY: str
-    SUPABASE_SERVICE_KEY: str
+    SUPABASE_URL: Optional[str] = None
+    SUPABASE_ANON_KEY: Optional[str] = None
+    SUPABASE_SERVICE_KEY: Optional[str] = None
 
     # Twilio
-    TWILIO_ACCOUNT_SID: str
-    TWILIO_AUTH_TOKEN: str
-    TWILIO_VERIFY_SID: str
-    TWILIO_PHONE_NUMBER: str
+    TWILIO_ACCOUNT_SID: Optional[str] = None
+    TWILIO_AUTH_TOKEN: Optional[str] = None
+    TWILIO_VERIFY_SID: Optional[str] = None
+    TWILIO_PHONE_NUMBER: Optional[str] = None
+    TWILIO_WEBHOOK_BASE_URL: Optional[str] = None
+    PUBLIC_BASE_URL: Optional[str] = None
 
     # OpenAI
-    OPENAI_API_KEY: str
+    OPENAI_API_KEY: Optional[str] = None
 
     # Google Cloud TTS
-    GOOGLE_TTS_API_KEY: str
+    GOOGLE_TTS_API_KEY: Optional[str] = None
     GOOGLE_CREDENTIALS_JSON: Optional[str] = None
 
     # WhatsApp Business API
-    WHATSAPP_BUSINESS_ACCOUNT_ID: str
-    WHATSAPP_ACCESS_TOKEN: str
-    WHATSAPP_PHONE_NUMBER_ID: str
+    WHATSAPP_BUSINESS_ACCOUNT_ID: Optional[str] = None
+    WHATSAPP_ACCESS_TOKEN: Optional[str] = None
+    WHATSAPP_PHONE_NUMBER_ID: Optional[str] = None
 
     # Caller ID Providers
-    TELNYX_API_KEY: str
-    TRESTLEIQ_API_KEY: str
-    APIFY_API_TOKEN: str
+    TELNYX_API_KEY: Optional[str] = None
+    TRESTLEIQ_API_KEY: Optional[str] = None
+    APIFY_API_TOKEN: Optional[str] = None
 
     # AdMob
     ADMOB_APP_ID: Optional[str] = None
     ADMOB_AD_UNIT_ID: Optional[str] = None
 
     # Firebase
-    FIREBASE_SERVER_KEY: str
+    FIREBASE_SERVER_KEY: Optional[str] = None
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # RevenueCat
-    REVENUECAT_API_KEY: str
+    REVENUECAT_API_KEY: Optional[str] = None
 
     # Mixpanel
-    MIXPANEL_TOKEN: str
+    MIXPANEL_TOKEN: Optional[str] = None
 
     # Meilisearch
     MEILISEARCH_URL: str = "http://localhost:7700"
-    MEILISEARCH_API_KEY: str
+    MEILISEARCH_API_KEY: Optional[str] = None
 
     @property
     def allowed_origins_list(self) -> list[str]:
